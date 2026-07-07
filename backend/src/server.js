@@ -1,19 +1,30 @@
 import "dotenv/config";
 import express from "express";
-import { getGamesForDate, getRecentGamesForTeam, getGameById, annotateWithResult } from "./balldontlie.js";
-import { predictGame } from "./model.js";
-import { logPrediction, resolveGame, getAccuracyStats, getAllPredictions } from "./tracker.js";
 import cors from "cors";
-
+import {
+  getGamesForDate,
+  getRecentGamesForTeam,
+  annotateWithResult,
+  getGameById,
+} from "./balldontlie.js";
+import { predictGame } from "./model.js";
+import {
+  logPrediction,
+  resolveGame,
+  getAccuracyStats,
+  getAllPredictions,
+} from "./tracker.js";
 
 const app = express();
+const PORT = process.env.PORT || 4000;
+
 app.use(cors());
 app.use(express.json());
-const PORT = 4000;
 
 app.get("/health", (req, res) => {
   res.json({ status: "ok" });
 });
+
 app.get("/games", async (req, res) => {
   try {
     const date = req.query.date || "2026-01-15";
@@ -23,9 +34,10 @@ app.get("/games", async (req, res) => {
     res.status(500).json({ error: err.message });
   }
 });
+
 app.post("/predict", async (req, res) => {
   try {
-    const { homeTeamId, awayTeamId } = req.body;
+    const { gameId, date, homeTeamId, awayTeamId } = req.body;
 
     const homeRawGames = await getRecentGamesForTeam(homeTeamId, 10);
     const awayRawGames = await getRecentGamesForTeam(awayTeamId, 10);
@@ -33,13 +45,13 @@ app.post("/predict", async (req, res) => {
     const homeRecentGames = annotateWithResult(homeRawGames, homeTeamId);
     const awayRecentGames = annotateWithResult(awayRawGames, awayTeamId);
 
-   const result = predictGame({ homeRecentGames, awayRecentGames });
+    const result = predictGame({ homeRecentGames, awayRecentGames });
 
     const record = logPrediction({
-      gameId: req.body.gameId,
-      date: req.body.date,
-      homeTeam: req.body.homeTeamId,
-      awayTeam: req.body.awayTeamId,
+      gameId,
+      date,
+      homeTeam: homeTeamId,
+      awayTeam: awayTeamId,
       homeWinProbability: result.homeWinProbability,
     });
 
@@ -48,6 +60,7 @@ app.post("/predict", async (req, res) => {
     res.status(500).json({ error: err.message });
   }
 });
+
 app.post("/resolve", (req, res) => {
   const { gameId, actualHomeWin } = req.body;
   const record = resolveGame(gameId, actualHomeWin);
@@ -55,15 +68,6 @@ app.post("/resolve", (req, res) => {
   res.json({ record });
 });
 
-app.get("/accuracy", (req, res) => {
-  res.json(getAccuracyStats());
-});
-app.get("/predictions", (req, res) => {
-  res.json({ predictions: getAllPredictions() });
-});
-app.listen(PORT, () => {
-  console.log(`Server running on http://localhost:${PORT}`);
-});
 app.post("/auto-resolve", async (req, res) => {
   try {
     const { gameId } = req.body;
@@ -80,4 +84,16 @@ app.post("/auto-resolve", async (req, res) => {
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
+});
+
+app.get("/predictions", (req, res) => {
+  res.json({ predictions: getAllPredictions() });
+});
+
+app.get("/accuracy", (req, res) => {
+  res.json(getAccuracyStats());
+});
+
+app.listen(PORT, () => {
+  console.log(`Server running on http://localhost:${PORT}`);
 });

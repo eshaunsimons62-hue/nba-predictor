@@ -10,22 +10,27 @@ function App() {
   useEffect(() => {
     async function fetchGamesAndPredictions() {
       setLoading(true);
-      const response = await fetch(`http://localhost:4000/games?date=${selectedDate}`);
+      const response = await fetch(
+        `${import.meta.env.VITE_API_URL}/games?date=${selectedDate}`
+      );
       const data = await response.json();
       setGames(data.games);
 
       const predictionMap = {};
       for (const game of data.games) {
-        const predictRes = await fetch("http://localhost:4000/predict", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            gameId: game.id,
-            date: game.date,
-            homeTeamId: game.home_team.id,
-            awayTeamId: game.visitor_team.id,
-          }),
-        });
+        const predictRes = await fetch(
+          `${import.meta.env.VITE_API_URL}/predict`,
+          {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              gameId: game.id,
+              date: game.date,
+              homeTeamId: game.home_team.id,
+              awayTeamId: game.visitor_team.id,
+            }),
+          }
+        );
         const predictData = await predictRes.json();
         predictionMap[game.id] = predictData.homeWinProbability;
       }
