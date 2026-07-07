@@ -36,3 +36,11 @@ export function annotateWithResult(games, teamId) {
     return { won: teamScore > opponentScore };
   });
 }
+export async function getGameById(gameId) {
+  const response = await axios.get(`${BASE_URL}/games/${gameId}`, {
+    headers: {
+      Authorization: process.env.BALLDONTLIE_API_KEY,
+    },
+  });
+  return response.data.data;
+}

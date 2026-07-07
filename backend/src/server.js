@@ -1,6 +1,6 @@
 import "dotenv/config";
 import express from "express";
-import { getGamesForDate, getRecentGamesForTeam, annotateWithResult } from "./balldontlie.js";
+import { getGamesForDate, getRecentGamesForTeam, getGameById, annotateWithResult } from "./balldontlie.js";
 import { predictGame } from "./model.js";
 import { logPrediction, resolveGame, getAccuracyStats, getAllPredictions } from "./tracker.js";
 
@@ -55,6 +55,26 @@ app.post("/resolve", (req, res) => {
 app.get("/accuracy", (req, res) => {
   res.json(getAccuracyStats());
 });
+app.get("/predictions", (req, res) => {
+  res.json({ predictions: getAllPredictions() });
+});
 app.listen(PORT, () => {
   console.log(`Server running on http://localhost:${PORT}`);
+});
+app.post("/auto-resolve", async (req, res) => {
+  try {
+    const { gameId } = req.body;
+    const game = await getGameById(gameId);
+
+    if (game.status !== "Final") {
+      return res.json({ resolved: false, reason: "Game not final yet" });
+    }
+
+    const actualHomeWin = game.home_team_score > game.visitor_team_score;
+    const record = resolveGame(gameId, actualHomeWin);
+
+    res.json({ resolved: true, record });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
 });
