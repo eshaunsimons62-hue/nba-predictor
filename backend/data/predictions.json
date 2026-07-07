@@ -7,5 +7,41 @@
     "homeWinProbability": 0.51,
     "actualHomeWin": true,
     "createdAt": "2026-07-07T00:37:57.414Z"
+  },
+  {
+    "gameId": 18447392,
+    "date": "2026-01-15",
+    "homeTeam": 22,
+    "awayTeam": 15,
+    "homeWinProbability": 0.66,
+    "actualHomeWin": null,
+    "createdAt": "2026-07-07T01:40:05.661Z"
+  },
+  {
+    "gameId": 18447393,
+    "date": "2026-01-15",
+    "homeTeam": 9,
+    "awayTeam": 24,
+    "homeWinProbability": 0.31,
+    "actualHomeWin": null,
+    "createdAt": "2026-07-07T01:40:06.840Z"
+  },
+  {
+    "gameId": 18447378,
+    "date": "2026-01-13",
+    "homeTeam": 16,
+    "awayTeam": 24,
+    "homeWinProbability": 0.31,
+    "actualHomeWin": null,
+    "createdAt": "2026-07-07T01:41:30.889Z"
+  },
+  {
+    "gameId": 18447379,
+    "date": "2026-01-13",
+    "homeTeam": 11,
+    "awayTeam": 5,
+    "homeWinProbability": 0.41,
+    "actualHomeWin": null,
+    "createdAt": "2026-07-07T01:41:31.531Z"
   }
 ]

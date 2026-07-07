@@ -2,35 +2,69 @@ import { useState, useEffect } from "react";
 import GameCard from "./components/GameCard";
 
 function App() {
+  const [selectedDate, setSelectedDate] = useState("2026-01-15");
   const [games, setGames] = useState([]);
+  const [predictions, setPredictions] = useState({});
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    async function fetchGames() {
-      const response = await fetch("http://localhost:4000/games?date=2026-01-15");
+    async function fetchGamesAndPredictions() {
+      setLoading(true);
+      const response = await fetch(`http://localhost:4000/games?date=${selectedDate}`);
       const data = await response.json();
       setGames(data.games);
+
+      const predictionMap = {};
+      for (const game of data.games) {
+        const predictRes = await fetch("http://localhost:4000/predict", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            gameId: game.id,
+            date: game.date,
+            homeTeamId: game.home_team.id,
+            awayTeamId: game.visitor_team.id,
+          }),
+        });
+        const predictData = await predictRes.json();
+        predictionMap[game.id] = predictData.homeWinProbability;
+      }
+
+      setPredictions(predictionMap);
       setLoading(false);
     }
 
-    fetchGames();
-  }, []);
+    fetchGamesAndPredictions();
+  }, [selectedDate]);
 
   return (
     <div style={{ maxWidth: "600px", margin: "40px auto", padding: "0 20px" }}>
-      <h1 style={{ fontFamily: "var(--font-display)", fontSize: "42px" }}>
-        Courtside
-      </h1>
+      <header className="app-header">
+        <h1 className="app-title">Courtside</h1>
+        <p className="app-subtitle">Model predictions vs. real NBA outcomes</p>
+        <input
+          type="date"
+          className="date-picker"
+          value={selectedDate}
+          onChange={(e) => setSelectedDate(e.target.value)}
+        />
+      </header>
 
-      {loading && <p>Loading games...</p>}
+      {loading && <p className="status-text">Loading games...</p>}
 
-      {!loading && games.length === 0 && <p>No games found for this date.</p>}
+      {!loading && games.length === 0 && (
+        <p className="status-text">No games scheduled for this date.</p>
+      )}
 
-      {games.map((game) => (
-        <div key={game.id}>
-          {game.home_team.full_name} vs {game.visitor_team.full_name}
-        </div>
-      ))}
+      {!loading &&
+        games.map((game) => (
+          <GameCard
+            key={game.id}
+            homeTeam={game.home_team.full_name}
+            awayTeam={game.visitor_team.full_name}
+            homeWinProbability={predictions[game.id] ?? 0.5}
+          />
+        ))}
     </div>
   );
 }

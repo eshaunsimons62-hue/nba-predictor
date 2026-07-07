@@ -84,3 +84,36 @@ body {
   font-size: 13px;
   color: var(--text-muted);
 }
+
+.app-header {
+  margin-bottom: 32px;
+}
+
+.app-title {
+  font-family: var(--font-display);
+  font-size: 48px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+}
+
+.app-subtitle {
+  color: var(--text-muted);
+  font-size: 14px;
+  margin-top: 4px;
+  margin-bottom: 16px;
+}
+
+.date-picker {
+  background: var(--bg-elevated);
+  border: 1px solid var(--border);
+  color: var(--text-primary);
+  font-family: var(--font-mono);
+  padding: 8px 12px;
+  border-radius: 4px;
+  font-size: 14px;
+}
+
+.status-text {
+  color: var(--text-muted);
+  font-family: var(--font-body);
+}
