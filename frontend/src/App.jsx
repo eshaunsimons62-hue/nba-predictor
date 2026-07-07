@@ -33,6 +33,10 @@ function App() {
         );
         const predictData = await predictRes.json();
         predictionMap[game.id] = predictData.homeWinProbability;
+
+        // Small delay between requests to avoid hitting balldontlie's
+        // free-tier rate limit when a date has many games.
+        await new Promise((resolve) => setTimeout(resolve, 300));
       }
 
       setPredictions(predictionMap);
