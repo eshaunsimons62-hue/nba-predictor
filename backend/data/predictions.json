@@ -1,0 +1,11 @@
+[
+  {
+    "gameId": 999,
+    "date": "2026-01-15",
+    "homeTeam": 14,
+    "awayTeam": 2,
+    "homeWinProbability": 0.51,
+    "actualHomeWin": true,
+    "createdAt": "2026-07-07T00:37:57.414Z"
+  }
+]
