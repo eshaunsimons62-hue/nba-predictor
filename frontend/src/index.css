@@ -1,0 +1,86 @@
+
+:root {
+  --bg: #12151c;
+  --bg-elevated: #1a1e28;
+  --text-primary: #e8e6e1;
+  --text-muted: #8b91a0;
+  --accent-model: #ffb020;
+  --accent-market: #3b82f6;
+  --border: #262b38;
+
+  --font-display: "Barlow Condensed", sans-serif;
+  --font-body: "Inter", sans-serif;
+  --font-mono: "IBM Plex Mono", monospace;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  background: var(--bg);
+  color: var(--text-primary);
+  font-family: var(--font-body);
+}
+.game-card {
+  background: var(--bg-elevated);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  padding: 20px 24px;
+  margin-bottom: 12px;
+}
+
+.game-card-teams {
+  font-family: var(--font-display);
+  font-size: 28px;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+  margin-bottom: 14px;
+}
+
+.team {
+  color: var(--text-muted);
+}
+
+.team-favored {
+  color: var(--text-primary);
+}
+
+.team-at {
+  font-family: var(--font-body);
+  font-size: 14px;
+  color: var(--text-muted);
+  font-weight: 400;
+}
+
+.probability-bar {
+  display: flex;
+  height: 8px;
+  border-radius: 4px;
+  overflow: hidden;
+  background: var(--border);
+}
+
+.probability-fill-away {
+  background: var(--text-muted);
+  transition: width 0.3s ease;
+}
+
+.probability-fill-home {
+  background: var(--accent-model);
+  transition: width 0.3s ease;
+}
+
+.probability-labels {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 8px;
+  font-family: var(--font-mono);
+  font-size: 13px;
+  color: var(--text-muted);
+}

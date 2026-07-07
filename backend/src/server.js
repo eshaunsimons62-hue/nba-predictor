@@ -3,8 +3,11 @@ import express from "express";
 import { getGamesForDate, getRecentGamesForTeam, getGameById, annotateWithResult } from "./balldontlie.js";
 import { predictGame } from "./model.js";
 import { logPrediction, resolveGame, getAccuracyStats, getAllPredictions } from "./tracker.js";
+import cors from "cors";
+
 
 const app = express();
+app.use(cors());
 app.use(express.json());
 const PORT = 4000;
 
