@@ -2,8 +2,9 @@ import axios from "axios";
 
 const BASE_URL = "https://api.balldontlie.io/v1";
 
-const cache = new Map();
 const CACHE_TTL_MS = 10 * 60 * 1000; // 10 minutes
+const teamGamesCache = new Map();
+const gamesCache = new Map();
 
 function client() {
   return axios.create({
@@ -15,13 +16,22 @@ function client() {
 }
 
 /**
- * Fetch games for a given date.
+ * Fetch games for a given date, cached briefly to avoid re-fetching
+ * the same date repeatedly when multiple users load the app close
+ * together in time.
  * @param {string} dateISO - format YYYY-MM-DD
  */
 export async function getGamesForDate(dateISO) {
+  const cached = gamesCache.get(dateISO);
+  if (cached && Date.now() - cached.timestamp < CACHE_TTL_MS) {
+    return cached.data;
+  }
+
   const { data } = await client().get("/games", {
     params: { dates: [dateISO] },
   });
+
+  gamesCache.set(dateISO, { data: data.data, timestamp: Date.now() });
   return data.data;
 }
 
@@ -40,7 +50,7 @@ export async function getGameById(gameId) {
  */
 export async function getRecentGamesForTeam(teamId, count = 10) {
   const cacheKey = `team-${teamId}-${count}`;
-  const cached = cache.get(cacheKey);
+  const cached = teamGamesCache.get(cacheKey);
 
   if (cached && Date.now() - cached.timestamp < CACHE_TTL_MS) {
     return cached.data;
@@ -54,7 +64,7 @@ export async function getRecentGamesForTeam(teamId, count = 10) {
   });
 
   const games = response.data.data.filter((g) => g.status === "Final");
-  cache.set(cacheKey, { data: games, timestamp: Date.now() });
+  teamGamesCache.set(cacheKey, { data: games, timestamp: Date.now() });
   return games;
 }
 
